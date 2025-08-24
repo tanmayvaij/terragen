@@ -1,0 +1,20 @@
+{
+  "name": "terragen",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "scripts": {
+    "build": "tsc"
+  },
+  "dependencies": {
+    "@langchain/core": "^0.3.71",
+    "@langchain/google-genai": "^0.2.16",
+    "@langchain/openai": "^0.6.7",
+    "dotenv": "^17.2.1",
+    "snapcube": "^1.4.2"
+  },
+  "devDependencies": {
+    "@types/node": "^24.3.0",
+    "typescript": "^5.9.2"
+  }
+}
