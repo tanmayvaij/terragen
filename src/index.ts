@@ -38,9 +38,8 @@ NOTE:
 `);
 
 const main = async (repository: string) => {
-
   console.log("Agent started");
-  
+
   console.log("Fetching project structure");
 
   const projectStructure = (await getGithubFiles(repository, {
@@ -52,16 +51,17 @@ const main = async (repository: string) => {
 
   console.log("Formatting prompt");
 
-  const formattedPrompt = await prompt.format({ structure: projectStructure.join("\n") });
+  const formattedPrompt = await prompt.format({
+    structure: projectStructure.join("\n"),
+  });
 
   console.log("Prompt formatted");
 
   console.log("Getting response");
-  
+
   const response = await llm.invoke(formattedPrompt);
 
   console.log(JSON.parse(response.content as string));
-  
 };
 
 main("tanmayvaij/snapcube-docs")
