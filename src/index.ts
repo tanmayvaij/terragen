@@ -37,33 +37,23 @@ NOTE:
  - Do not use placeholders
 `);
 
-const main = async (repository: string) => {
-  console.log("Agent started");
-
-  console.log("Fetching project structure");
-
+const main = async (
+  repository: string
+): Promise<{ id: string; terraform: string; cmds: string[] }> => {
   const projectStructure = (await getGithubFiles(repository, {
     structureOnly: true,
     token: process.env.GITHUB_ACCOUNT_TOKEN!,
   })) as string[];
 
-  console.log("Fetched project structure");
-
-  console.log("Formatting prompt");
-
   const formattedPrompt = await prompt.format({
     structure: projectStructure.join("\n"),
   });
 
-  console.log("Prompt formatted");
-
-  console.log("Getting response");
-
   const response = await llm.invoke(formattedPrompt);
 
-  console.log(JSON.parse(response.content as string));
+  return JSON.parse(response.content as string);
 };
 
 main("tanmayvaij/snapcube-docs")
-  .then()
+  .then((res) => console.log(res))
   .catch((err) => console.log(err));
