@@ -2,6 +2,7 @@ import { ChatGoogleGenerativeAI } from "@langchain/google-genai";
 import { getGithubFiles } from "snapcube";
 import { config } from "dotenv";
 import { ChatPromptTemplate } from "@langchain/core/prompts";
+import { z } from "zod";
 
 config();
 
@@ -29,31 +30,23 @@ The JSON object should have three properties:
  - cmds: An array of shell commands, in order, to fully build and deploy the project. 
    This should include all necessary steps such as dependency installation, a project-specific build process, 
    infrastructure provisioning, and file/asset synchronization with the provisioned cloud resources. 
-
-NOTE:
-
- - Output ONLY valid JSON
- - Do not output any commentary, code blocks, markdown or backticks
- - Do not use placeholders
 `);
 
-const main = async (
-  repository: string
-): Promise<{ id: string; terraform: string; cmds: string[] }> => {
+const DeploymentSchema = z.object({
+  id: z.string(),
+  terraform: z.string(),
+  cmds: z.array(z.string()),
+});
+
+export const generateDeploymentPlan = async (repository: string) => {
   const projectStructure = (await getGithubFiles(repository, {
     structureOnly: true,
     token: process.env.GITHUB_ACCOUNT_TOKEN!,
   })) as string[];
 
-  const formattedPrompt = await prompt.format({
-    structure: projectStructure.join("\n"),
-  });
+  const structured = llm.withStructuredOutput(DeploymentSchema);
 
-  const response = await llm.invoke(formattedPrompt);
+  const chain = prompt.pipe(structured);
 
-  return JSON.parse(response.content as string);
+  return chain.invoke({ structure: projectStructure.join("\n") });
 };
-
-main("tanmayvaij/snapcube-docs")
-  .then((res) => console.log(res))
-  .catch((err) => console.log(err));
