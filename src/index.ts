@@ -33,9 +33,17 @@ The JSON object should have three properties:
 `);
 
 const DeploymentSchema = z.object({
-  id: z.string(),
-  terraform: z.string(),
-  cmds: z.array(z.string()),
+  id: z.string().describe("A unique project identifier"),
+  terraform: z.string(
+    `A single string containing a complete and production-ready Terraform configuration. 
+    This configuration must provision the necessary AWS infrastructure to deploy the given project, 
+    with all resources located in the Mumbai (ap-south-1) region`
+  ),
+  cmds: z.array(
+    z.string(`An array of shell commands, in order, to fully build and deploy the project. 
+   This should include all necessary steps such as dependency installation, a project-specific build process, 
+   infrastructure provisioning, and file/asset synchronization with the provisioned cloud resources. `)
+  ),
 });
 
 export const generateDeploymentPlan = async (repository: string) => {
